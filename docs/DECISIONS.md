@@ -1239,3 +1239,43 @@ Corpus after the change: n8n l.649 is `medium`; the other three remaining findin
   kept (rewriting it would change every hash and break the tags, releases and attestations). AI use
   is declared once in `CONTRIBUTING.md` and the README, and new commits carry no AI trailer. A
   commit without a trailer is not a claim that no AI was involved.
+
+## Improvement plan, phase 8 — product and user experience
+
+- **Config errors locate the key by searching the text**, because `tomllib` gives no line numbers
+  for values. It looks for the first `key =` line (inside `[tool.ghostrules]` for a pyproject), so a
+  key repeated in a table that TOML would already reject cannot mislead it. A TOML syntax error keeps
+  tomllib's own "line N" message.
+- **Exit code 3 comes from a wrapper (`cli.main`), not from `app`.** Typer lets an unexpected
+  exception escape and Python then exits 1. The old entry point `ghostrules.cli:app` still works
+  (tests, `python -c`) but gives 1 on a crash; only the console script gives 3. A rule that crashes
+  is still 2 (the scan is incomplete, and it says which rule), decided in phase 4.
+  `docs/design/PLAN.md` still names `ghostrules.cli:app` as the original script entry: it is history.
+- **Stale baseline entries are counted only for a scan of one whole directory.** With a file or a
+  sub-folder every other entry would look stale. The warning never changes the exit code: a stale
+  entry is hygiene, not a finding. No time-based expiry: an entry lapses when its text changes.
+- **`created` is a date, so regenerating a baseline on another day changes the file** even if the
+  entries are the same. Accepted: the date is what the phase asked to expose.
+- **SARIF was already validated against the official 2.1.0 schema** (`tests/test_reporters.py`,
+  every example); phase 8 added the missing piece for JSON, not a second SARIF check.
+- **Performance budgets are 6 to 10 times the reference run**, not tighter: a CI runner is two or
+  three times slower and one shared job must not flake. The slowest per file is `thirty-claude-md`
+  (2.5 s for 60 files in an import chain); not investigated in this phase.
+- **Platform tests run on the existing matrix.** They were written on Linux; the Windows and macOS
+  results are known only after the first CI run.
+
+## Phase 9 (documentation and governance)
+
+- **Bench detail leaves the README.** The README keeps the recall and precision headlines, generated
+  into the same marker blocks as before; the tables and the per-rule list are generated into
+  `bench/README.md` (`recall-detail`, `precision-detail`). Reason: the front page states the
+  independent figure and its sample size, the rest is for readers of the benchmark.
+- **Link check is a separate workflow (`links.yml`), not part of `ci-ok`.** A third-party site being
+  down must not block a merge. It runs on pull requests that touch Markdown, weekly and by hand.
+  The action is pinned by SHA (`lycheeverse/lychee-action` v2.9.0, read with `gh api`).
+- **Thresholds in GOVERNANCE.md** (3 independent reports, or precision under 50 % on at least 10
+  labelled findings) and the deprecation period (two minor releases) are proposals by the author of
+  this phase; the maintainer may change them.
+- **Code of Conduct contact** uses GitHub's private reporting; a dedicated email is `[HUMANO]`.
+- **Changelog:** Unreleased sections were merged into the Keep a Changelog categories and internal
+  tracking labels (H1…H14) removed. Older "Known limits" sections are kept as written.
