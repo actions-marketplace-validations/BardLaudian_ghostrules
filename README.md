@@ -90,7 +90,7 @@ ghostrules lock --check  .ghostrules.lock
 
 ```yaml
 - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-- uses: BardLaudian/ghostrules@8d65b35e5576d85cf2a3bc0e05fa6525d15912c5 # v0.4.1
+- uses: BardLaudian/ghostrules@3a5f7120fc4e1dc1c9b58fad760567f8116b0b35 # v0.5.0
   with:
     fail-on: high        # critical | high | medium | low | info | none
     lock-check: "true"   # fail if what the agents read changed
@@ -99,7 +99,7 @@ ghostrules lock --check  .ghostrules.lock
 ```yaml
 repos:
   - repo: https://github.com/BardLaudian/ghostrules
-    rev: v0.4.1
+    rev: v0.5.0
     hooks:
       - id: ghostrules
 ```
@@ -113,7 +113,7 @@ measured and the misses are listed ([bench/](https://github.com/BardLaudian/ghos
 [full results](https://github.com/BardLaudian/ghostrules/blob/main/bench/RESULTS.md)). The independent cases and the held-out repositories were not used to tune rules; the corpus was. The tables by technique and by rule are in [bench/README.md](https://github.com/BardLaudian/ghostrules/blob/main/bench/README.md#the-numbers).
 
 <!-- bench:recall:start -->
-**Recall on independent cases: 1 of 4 reported (25 %, 95 % CI 5–70 %); 1 of 4 (25 %, 95 % CI 5–70 %) fail the default `--fail-on high` check.** They are 4 of the 18 cases an independent review wrote; the other 14 are not in the repository yet, so this is a small sample. The 106 cases written by the author or taken from public sources are shown separately because the author knew what the rules match; across all cases 101 of 110 (92 %, 95 % CI 85–96 %) are reported. Visible prose is `low` by default, so the check fails less often than the rules report (hidden text and configuration are not lowered). The misses include paraphrases, other languages, scripts and files that nothing points the scanner to, tool descriptions served by a running MCP server, two scanner evasions that only the pull-request mode closes, and gaps of ours; each is listed in the results.
+**Recall on independent cases: 1 of 4 reported (25 %, 95 % CI 5–70 %); 1 of 4 (25 %, 95 % CI 5–70 %) fail the default `--fail-on high` check.** They are 4 of the 18 cases an independent review wrote; the other 14 are not in the repository (the original text is lost), so this is a small sample. The 106 cases written by the author or taken from public sources are shown separately because the author knew what the rules match; across all cases 101 of 110 (92 %, 95 % CI 85–96 %) are reported. Visible prose is `low` by default, so the check fails less often than the rules report (hidden text and configuration are not lowered). The misses include paraphrases, other languages, scripts and files that nothing points the scanner to, tool descriptions served by a running MCP server, two scanner evasions that only the pull-request mode closes, and gaps of ours; each is listed in the results.
 <!-- bench:recall:end -->
 
 <!-- bench:precision:start -->
@@ -128,7 +128,7 @@ A workflow scheduled weekly scans 300 popular public repositories (`corpus/`; th
 
 ## How this was built
 
-One person maintains `ghostrules` and works with AI coding assistants for code, tests and documentation. The author decides what is merged, reads the diffs, and is responsible for the result; the assistants do not publish, push or release. Labels and figures that no person has reviewed are marked as such, and the benchmark's headline counts only cases the rule author did not write. Commits made before 2026-11-23 carry an AI trailer, later ones do not, and the use is declared here instead ([details](https://github.com/BardLaudian/ghostrules/blob/main/CONTRIBUTING.md#how-this-project-is-built-ai-assistance)).
+One person maintains `ghostrules` and works with AI coding assistants for code, tests and documentation. The author decides what is merged, reads the diffs, and is responsible for the result; the assistants push, open pull requests or release only when the author asks for it at that moment. Labels and figures that no person has reviewed are marked as such, and the benchmark's headline counts only cases the rule author did not write. Most commits made before 2026-11-23 (80 of 88) carry an AI trailer, later ones do not, and the use is declared here instead ([details](https://github.com/BardLaudian/ghostrules/blob/main/CONTRIBUTING.md#how-this-project-is-built-ai-assistance)).
 
 ## Alternatives
 
