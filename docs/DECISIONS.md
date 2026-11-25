@@ -1288,3 +1288,42 @@ Corpus after the change: n8n l.649 is `medium`; the other three remaining findin
 - **Code of Conduct contact** uses GitHub's private reporting only. Decided by the maintainer on 2026-11-24: no email is published.
 - **Changelog:** Unreleased sections were merged into the Keep a Changelog categories and internal
   tracking labels (H1…H14) removed. Older "Known limits" sections are kept as written.
+
+## 2026-11-25 — A big agent file is scanned in windows, never skipped
+
+**Context.** `--max-file-size` skipped any file over 1 MiB with a warning and exit 0. Padding a
+`CLAUDE.md` past the cap hid a payload placed after it (a C3 evasion in the 0.6.0 taxonomy).
+
+**Decision.**
+- Instruction files over the cap are scanned in windows of `max_file_size` bytes with an overlap of
+  64 KiB (a quarter of the window if the cap is smaller). Cuts fall on a newline when one is in the
+  last quarter of the window. Findings are moved back to their real line and column and
+  de-duplicated.
+- A config or script file over the cap is not split (it must parse as a whole) and the scan fails
+  with exit 2. Any file over a hard limit of 16 MiB also fails with exit 2.
+- A file that no agent reads (`other`, only seen with `--all-files`) keeps the old behaviour:
+  skipped with a warning.
+- `--max-file-size 0` still means no limit.
+
+**Known limit.** An instruction longer than the overlap that straddles a cut is not seen whole by any
+window. 64 KiB is far longer than any instruction a rule matches.
+
+**Rejected.** Raising the cap (moves the bypass); failing every file over the cap (would turn a
+long but legitimate `CLAUDE.md` into an error).
+
+## 2026-11-25 — Red-team loop: blind by tools, audited by log (Phase 12)
+
+**Decision.** Attacker and judge are subagents with no tools; the defender has repo tools but
+receives only dev cases. The test set lives outside the repo (`GHOSTRULES_REDTEAM_TEST_DIR`), is
+denied in `.claude/settings.json`, and every tool call is logged by a hook and audited. The gate is
+a script with versioned thresholds; the oracle returns `detected` (high or critical) and the
+maximum severity, never rule ids.
+
+**Choices.** Split 50/50 by hash of the id. Judge similarity threshold 0.6 (`difflib` on normalised
+text), picked before any data, reviewed by a person on a sample each round. Rule ids are removed
+from `AGENT_MODELS.md` before it reaches the attacker.
+
+**Open.** Whether `tools: []` really removes every tool is verified in Phase 13, not assumed. The
+log cannot tell which agent made a call, so one access voids the round. `.claude/agents/` is not
+scanned by ghostrules itself (a coverage gap to decide separately).
+
