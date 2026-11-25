@@ -5,6 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-11-24
+
+### Fixed
+
+- **GR017 no longer reports the example access key that AWS publishes in its documentation**
+  (`AKIAIOSFODNN7EXAMPLE`) as a critical secret. Only that value and the matching secret key are
+  skipped; any other value, including one that merely ends in `EXAMPLE`, is still reported. Found by
+  the weekly corpus run on a skill that explains what an obvious docs example looks like.
+
 ## [0.5.0] - 2026-11-24
 
 ### Added
@@ -433,7 +442,8 @@ First release.
 - Secrets are never printed: every finding, warning and error passes through one masking step
   (`ghp_****…a1b2`), and a test fails if a secret appears in any report format.
 
-[Unreleased]: https://github.com/BardLaudian/ghostrules/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/BardLaudian/ghostrules/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/BardLaudian/ghostrules/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/BardLaudian/ghostrules/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/BardLaudian/ghostrules/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/BardLaudian/ghostrules/compare/v0.3.0...v0.4.0
